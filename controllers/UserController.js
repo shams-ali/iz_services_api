@@ -2,7 +2,6 @@ const User = require("../models").User;
 const authService = require("./../services/AuthService");
 
 const create = async function(req, res) {
-  console.log(req.body);
   res.setHeader("Content-Type", "application/json");
   const body = req.body;
   if (!body.unique_key && !body.email && !body.phone) {
@@ -65,11 +64,11 @@ const remove = async function(req, res) {
 module.exports.remove = remove;
 
 const login = async function(req, res) {
+  console.log(req.body, "this is body!!!!!!!!!!!!!!!!");
   const body = req.body;
-  let err, user;
-
-  [err, user] = await to(authService.authUser(req.body));
-  if (err) return ReE(res, err, 422);
+  const [err, user] = await to(authService.authUser(req.body));
+  console.log(err);
+  if (err) return ReE(res, err, 401);
 
   return ReS(res, { token: user.getJWT(), user: user.toJSON() });
 };

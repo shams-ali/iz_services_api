@@ -4,6 +4,7 @@ const router = express.Router();
 const UserController = require("./../controllers/UserController");
 const HomeController = require("./../controllers/HomeController");
 const test = require("./testRoutes");
+const invoice = require("./invoiceRoutes");
 const passport = require("passport");
 const path = require("path");
 
@@ -52,5 +53,6 @@ router.use(
 );
 
 router.use("/test", passport.authenticate("jwt", { session: false }), test);
+router.use("/invoice", invoice);
 
 module.exports = router;
