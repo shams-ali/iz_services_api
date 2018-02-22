@@ -72,7 +72,7 @@ module.exports = {
         "payment"
       ])
     );
-
+    console.log("saving!!!");
     invoice.save(function(err, invoice) {
       if (err) {
         return res.status(500).json({
@@ -167,6 +167,7 @@ module.exports = {
    * invoiceController.remove()
    */
   remove: function(req, res) {
+    console.log("trying to delete");
     var id = req.params.id;
     invoiceModel.findByIdAndRemove(id, function(err, invoice) {
       if (err) {
