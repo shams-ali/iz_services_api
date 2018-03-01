@@ -1,13 +1,6 @@
 var invoiceModel = require("../models/invoiceModel.js");
-const {
-  pick,
-  find,
-  reject,
-  reduce
-} = require("lodash");
-const {
-  assign
-} = Object;
+const { pick, find, reject, reduce } = require("lodash");
+const { assign } = Object;
 /**
  * invoiceController.js
  *
@@ -17,8 +10,8 @@ module.exports = {
   /**
    * invoiceController.list()
    */
-  list: function (req, res) {
-    invoiceModel.find(function (err, invoices) {
+  list: function(req, res) {
+    invoiceModel.find(function(err, invoices) {
       if (err) {
         return res.status(500).json({
           message: "Error when getting invoice.",
@@ -32,30 +25,33 @@ module.exports = {
   /**
    * invoiceController.show()
    */
-  show: function (req, res) {
+  show: function(req, res) {
     var id = req.params.id;
-    invoiceModel.findOne({
-      _id: id
-    }, function (err, invoice) {
-      if (err) {
-        return res.status(500).json({
-          message: "Error when getting invoice.",
-          error: err
-        });
+    invoiceModel.findOne(
+      {
+        _id: id
+      },
+      function(err, invoice) {
+        if (err) {
+          return res.status(500).json({
+            message: "Error when getting invoice.",
+            error: err
+          });
+        }
+        if (!invoice) {
+          return res.status(404).json({
+            message: "No such invoice"
+          });
+        }
+        return res.json(invoice);
       }
-      if (!invoice) {
-        return res.status(404).json({
-          message: "No such invoice"
-        });
-      }
-      return res.json(invoice);
-    });
+    );
   },
 
   /**
    * invoiceController.create()
    */
-  create: function (req, res) {
+  create: function(req, res) {
     new invoiceModel(
       pick(req.body, [
         "dealer",
@@ -80,7 +76,7 @@ module.exports = {
         "status",
         "payments"
       ])
-    ).save(function (err, invoice) {
+    ).save(function(err, invoice) {
       if (err) {
         return res.status(500).json({
           message: "Error when creating invoice",
@@ -94,68 +90,74 @@ module.exports = {
   /**
    * invoiceController.update()
    */
-  update: ({
-    body,
-    query: {
-      type,
-      kind
-    },
-    params: {
-      id
-    }
-  }, res) => {
+  update: ({ body, query: { type, kind }, params: { id } }, res) => {
+    console.log("inside update", type, kind, id);
     if (!type) {
       res.status(500).json({
-        message: "Must Provide A Type",
+        message: "Must Provide A Type"
       });
     }
 
-    const idPrefix = type === 'invoice' ? '' : `${type}.`
-    const $setPrefix = type === 'invoice' ? '' : `${type}.$.`
-    if (kind === 'new') {
-      console.log('this is new')
-      invoiceModel.update({
-          _id: id, // id of invoice
-        }, {
-          $push: {
-            [type]: {
-              dmv_fee: 1000
+    const idPrefix = type === "invoice" ? "" : `${type}.`;
+    const $setPrefix = type === "invoice" ? "" : `${type}.$.`;
+    if (kind === "new") {
+      console.log("this is new");
+      invoiceModel
+        .update(
+          {
+            _id: id // id of invoice
+          },
+          {
+            $push: {
+              [type]: {
+                dmv_fee: 1000
+              }
             }
           }
-        })
-        .then(succ => res.send(succ))
-        .catch(err => res.status(500).json({
-          message: `Error when creating new ${type}`,
-          error: err
-        }))
+        )
+        .then(() => res.sendStatus(202))
+        .catch(err =>
+          res.status(500).json({
+            message: `Error when creating new ${type}`,
+            error: err
+          })
+        );
     } else {
       const $set = reduce(
         body,
-        ($set, value, key) => assign($set, {
-          [`${$setPrefix}${key}`]: value
-        }), {}
+        ($set, value, key) =>
+          assign($set, {
+            [`${$setPrefix}${key}`]: value
+          }),
+        {}
       );
-
-      invoiceModel.update({
-          [`${idPrefix}_id`]: id // id of fee or payment or invoice
-        }, {
-          $set
-        })
-        .then(succ => res.send(succ))
-        .catch(err => res.status(500).json({
-          message: `Error when updating ${type}.`,
-          error: err
-        }))
+      console.log("updating invoice model", $set);
+      invoiceModel
+        .update(
+          {
+            [`${idPrefix}_id`]: id // id of fee or payment or invoice
+          },
+          {
+            $set
+          }
+        )
+        .then(() => res.sendStatus(202))
+        .catch(err =>
+          res.status(500).json({
+            message: `Error when updating ${type}.`,
+            error: err
+          })
+        );
     }
   },
 
   /**
    * invoiceController.remove()
    */
-  remove: function (req, res) {
+  remove: function(req, res) {
     console.log("trying to delete");
     var id = req.params.id;
-    invoiceModel.findByIdAndRemove(id, function (err, invoice) {
+    invoiceModel.findByIdAndRemove(id, function(err, invoice) {
       if (err) {
         return res.status(500).json({
           message: "Error when deleting the invoice.",
