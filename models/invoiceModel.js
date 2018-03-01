@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-const fee = new Schema({
+const feeSchema = new Schema({
   dmv_fee: Number,
   service_fee: Number,
   other_fee: Number,
@@ -13,7 +13,7 @@ const fee = new Schema({
   vehicle_tax: Number
 });
 
-const payment = new Schema({
+const paymentSchema = new Schema({
   type: String,
   amount: Number
 });
@@ -38,8 +38,8 @@ const invoiceSchema = new Schema(
     case_type: String,
     case_status: String,
     comments: String,
-    fee: [fee],
-    payment: [payment]
+    fees: [feeSchema],
+    payments: [paymentSchema]
   },
   { timestamps: true }
 );
