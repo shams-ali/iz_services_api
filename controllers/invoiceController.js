@@ -97,7 +97,8 @@ module.exports = {
   update: ({
     body,
     query: {
-      type
+      type,
+      kind
     },
     params: {
       id
@@ -111,23 +112,41 @@ module.exports = {
 
     const idPrefix = type === 'invoice' ? '' : `${type}.`
     const $setPrefix = type === 'invoice' ? '' : `${type}.$.`
-    const $set = reduce(
-      body,
-      ($set, value, key) => assign($set, {
-        [`${$setPrefix}${key}`]: value
-      }), {}
-    );
+    if (kind === 'new') {
+      console.log('this is new')
+      invoiceModel.update({
+          _id: id, // id of invoice
+        }, {
+          $push: {
+            [type]: {
+              dmv_fee: 1000
+            }
+          }
+        })
+        .then(succ => res.send(succ))
+        .catch(err => res.status(500).json({
+          message: `Error when creating new ${type}`,
+          error: err
+        }))
+    } else {
+      const $set = reduce(
+        body,
+        ($set, value, key) => assign($set, {
+          [`${$setPrefix}${key}`]: value
+        }), {}
+      );
 
-    invoiceModel.update({
-        [`${idPrefix}_id`]: id
-      }, {
-        $set
-      })
-      .then(succ => res.send(succ))
-      .catch(err => res.status(500).json({
-        message: "Error when deleting the invoice.",
-        error: err
-      }))
+      invoiceModel.update({
+          [`${idPrefix}_id`]: id // id of fee or payment or invoice
+        }, {
+          $set
+        })
+        .then(succ => res.send(succ))
+        .catch(err => res.status(500).json({
+          message: `Error when updating ${type}.`,
+          error: err
+        }))
+    }
   },
 
   /**
