@@ -1,6 +1,8 @@
-var invoiceModel = require("../models/invoiceModel.js");
+const invoiceModel = require("../models/invoiceModel.js");
 const { pick, find, reject, reduce } = require("lodash");
 const { assign } = Object;
+
+const P = require("bluebird");
 /**
  * invoiceController.js
  *
@@ -90,7 +92,7 @@ module.exports = {
   /**
    * invoiceController.update()
    */
-  update: ({ body, query: { type, kind }, params: { id } }, res) => {
+  update: ({ body, query: { type, kind, deleteUid }, params: { id } }, res) => {
     console.log("inside update", type, kind, id);
     if (!type) {
       res.status(500).json({
@@ -100,26 +102,35 @@ module.exports = {
 
     const idPrefix = type === "invoice" ? "" : `${type}.`;
     const $setPrefix = type === "invoice" ? "" : `${type}.$.`;
-    if (kind === "new") {
-      console.log("this is new");
-      invoiceModel
+    if (deleteUid) {
+      console.log("inside delete");
+      return invoiceModel
+        .update({ _id: id }, { $pull: { [type]: { _id: deleteUid } } })
+        .then(() => res.sendStatus(202))
+        .catch(error =>
+          res.status(500).json({
+            message: `Error when deleting ${type}`,
+            error
+          })
+        );
+    } else if (kind === "new") {
+      console.log("this is body", body);
+      return invoiceModel
         .update(
           {
             _id: id // id of invoice
           },
           {
             $push: {
-              [type]: {
-                dmv_fee: 1000
-              }
+              [type]: body
             }
           }
         )
         .then(() => res.sendStatus(202))
-        .catch(err =>
+        .catch(error =>
           res.status(500).json({
             message: `Error when creating new ${type}`,
-            error: err
+            error
           })
         );
     } else {
@@ -142,10 +153,10 @@ module.exports = {
           }
         )
         .then(() => res.sendStatus(202))
-        .catch(err =>
+        .catch(error =>
           res.status(500).json({
             message: `Error when updating ${type}.`,
-            error: err
+            error
           })
         );
     }
@@ -155,13 +166,12 @@ module.exports = {
    * invoiceController.remove()
    */
   remove: function(req, res) {
-    console.log("trying to delete");
     var id = req.params.id;
-    invoiceModel.findByIdAndRemove(id, function(err, invoice) {
-      if (err) {
+    invoiceModel.findByIdAndRemove(id, function(error, invoice) {
+      if (error) {
         return res.status(500).json({
           message: "Error when deleting the invoice.",
-          error: err
+          error
         });
       }
       return res.status(204).json();

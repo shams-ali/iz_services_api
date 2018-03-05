@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./bin/www",
+    "start:prod": "node ./binwww"
   },
   "dependencies": {
     "bcrypt": "^1.0.3",
     "bcrypt-promise": "^2.0.0",
+    "bluebird": "^3.5.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "dotenv": "^5.0.0",

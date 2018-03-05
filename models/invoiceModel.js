@@ -32,7 +32,7 @@ const invoiceSchema = new Schema(
     vin: String,
     plate: String,
     make: String,
-    model_year: String,
+    model_year: Number,
     exp_date: String,
     engine: String,
     case_type: String,
