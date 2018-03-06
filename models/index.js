@@ -4,7 +4,7 @@ var basename = path.basename(__filename);
 var models = {};
 const mongoose = require("mongoose");
 
-if (CONFIG.db_host != "") {
+if (CONFIG.db_url) {
   var files = fs
     .readdirSync(__dirname)
     .filter(file => {
@@ -21,9 +21,10 @@ if (CONFIG.db_host != "") {
   mongoose.Promise = global.Promise; //set mongo up to use promises
 
   // const mongo_location = 'mongodb://'+CONFIG.db_host+':'+CONFIG.db_port+'/'+CONFIG.db_name;
-  const mongo_location = `mongodb://${CONFIG.db_user}:${CONFIG.db_password}@${
-    CONFIG.db_host
-  }:${CONFIG.db_port}/${CONFIG.db_name}`;
+  // const mongo_location = `mongodb://${CONFIG.db_user}:${CONFIG.db_password}@${
+  //   CONFIG.db_host
+  // }:${CONFIG.db_port}/${CONFIG.db_name}`;
+  const mongo_location = CONFIG.db_url;
 
   mongoose.connect(mongo_location).catch(err => {
     console.log("*** Can Not Connect to Mongo Server:", mongo_location);
