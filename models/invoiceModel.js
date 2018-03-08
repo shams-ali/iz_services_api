@@ -1,7 +1,12 @@
+const shortid = require("shortid");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 const feeSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   dmv_fee: Number,
   service_fee: Number,
   other_fee: Number,
@@ -14,12 +19,20 @@ const feeSchema = new Schema({
 });
 
 const paymentSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   type: String,
   amount: Number
 });
 
 const invoiceSchema = new Schema(
   {
+    _id: {
+      type: String,
+      default: shortid.generate
+    },
     dealer: String,
     name: String,
     phone: String,
