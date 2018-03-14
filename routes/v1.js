@@ -18,7 +18,9 @@ router.get("/", function(req, res, next) {
   });
 });
 
+/* ONLY OPEN THESE FOR ADMIN
 router.post("/users", UserController.create); // C
+
 router.get(
   "/users",
   passport.authenticate("jwt", { session: false }),
@@ -34,6 +36,7 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   UserController.remove
 ); // D
+*/
 router.post("/users/login", UserController.login);
 
 router.get(
