@@ -4,8 +4,8 @@ const authService = require("./../services/AuthService");
 const create = async function(req, res) {
   res.setHeader("Content-Type", "application/json");
   const body = req.body;
-  if (!body.unique_key && !body.email && !body.phone) {
-    return ReE(res, "Please enter an email or phone number to register.");
+  if (!body.unique_key && !body.username) {
+    return ReE(res, "Please enter a username to register.");
   } else if (!body.password) {
     return ReE(res, "Please enter a password to register.");
   } else {
@@ -44,11 +44,11 @@ const update = async function(req, res) {
   [err, user] = await to(user.save());
   if (err) {
     if (err.message == "Validation error")
-      err = "The email address " + data.email + " is already taken";
+      err = "The username " + data.username + " is already taken";
 
     return ReE(res, err);
   }
-  return ReS(res, { message: "Updated User: " + user.email });
+  return ReS(res, { message: "Updated User: " + user.username });
 };
 module.exports.update = update;
 
@@ -72,4 +72,5 @@ const login = async function(req, res) {
 
   return ReS(res, { token: user.getJWT(), user: user.toJSON() });
 };
+
 module.exports.login = login;

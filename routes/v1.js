@@ -53,6 +53,10 @@ router.use(
 );
 
 router.use("/test", passport.authenticate("jwt", { session: false }), test);
-router.use("/invoice", invoice);
+router.use(
+  "/invoice",
+  passport.authenticate("jwt", { session: false }),
+  invoice
+);
 
 module.exports = router;
