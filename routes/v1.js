@@ -1,17 +1,18 @@
 const express = require("express");
+
 const router = express.Router();
 
+const passport = require("passport");
+const path = require("path");
 const UserController = require("./../controllers/UserController");
 const HomeController = require("./../controllers/HomeController");
 const test = require("./testRoutes");
 const invoice = require("./invoiceRoutes");
 const lien = require("./lienRoutes");
-const passport = require("passport");
-const path = require("path");
 
 require("./../middleware/passport")(passport);
 /* GET home page. */
-router.get("/", function(req, res, next) {
+router.get("/", (req, res, next) => {
   res.json({
     status: "success",
     message: "Parcel Pending API",
@@ -46,7 +47,7 @@ router.get(
   HomeController.Dashboard
 );
 
-//********* API DOCUMENTATION **********
+// ********* API DOCUMENTATION **********
 router.use(
   "/docs/api.json",
   express.static(path.join(__dirname, "/../public/v1/documentation/api.json"))

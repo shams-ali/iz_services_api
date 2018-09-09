@@ -1,6 +1,7 @@
 const fs = require("fs");
 const pdfFiller = require("pdffiller");
 const moment = require("moment")
+
 const { assign } = Object
 /**
  * lienController.js
@@ -13,7 +14,7 @@ module.exports = {
     /**
      * lienController.list()
      */
-    list: function (req, res) {
+    list (req, res) {
         console.log('insides list')
         return res.json({});
     },
@@ -21,29 +22,29 @@ module.exports = {
     /**
      * lienController.show()
      */
-    show: function (req, res) {
+    show (req, res) {
         console.log('insides show')
-        var id = req.params.id;
+        const id = req.params.id;
         return res.json({});
     },
 
     /**
      * lienController.create()
      */
-    create: ({ body }, res) => {
+    create: ({ body = {} }, res) => {
         const sourcePDF = `${__dirname}/LienSaleForm.pdf`;
         const destinationPDF = `${__dirname}/LienSaleForm_Complete.pdf`;
         console.log(body, 'this is body')
         // const nameRegex = null;
-        // pdfFiller.generateFDFTemplate(sourcePDF, nameRegex, (err, fdfData) => err ? console.log(err) : console.log(fdfData));
+        // pdfFiller.generateFDFTemplate(sourcePDF, nameRegex, (err, fdfData) => err ? console.log(err) : console.log(fdfData, 'this is fdf data'));
         const storageToDate = moment(body['P1-2-Date owner billed']).diff(moment(body['P1-2-Date Veh into possession']), 'days') * body['PER DAY']; // use dates here
         const pdfData = assign(body,
             {
                 "STORAGE TO DATE": storageToDate,
                 'P1-6-Parking Violations 4000 or less': storageToDate,
-                "P1-6-Total of 2 (A-D) 4000 or less": +body["TOWING"] + +body["REPAIRS"] + +body["COST FOR LIEN SALE"] + storageToDate,
-                "P1-7-Area Code": body['tel'].slice(0, 3),
-                "P1-7-Telephone No": body['tel'].slice(3),
+                "P1-6-Total of 2 (A-D) 4000 or less": +body.TOWING + +body.REPAIRS + +body["COST FOR LIEN SALE"] + storageToDate,
+                "P1-7-Area Code": body.tel.slice(0, 3),
+                "P1-7-Telephone No": body.tel.slice(3),
                 "P1-1-Lic Exp Date": moment(body["P1-1-Lic Exp Date"]).format("MM Do YY"),
                 "P1-2-Date Veh into possession": moment(body["P1-2-Date Veh into possession"]).format("MM Do YY"),
                 "P1-2-Date owner billed": moment(body["P1-2-Date owner billed"]).format("MM Do YY"),
@@ -56,7 +57,12 @@ module.exports = {
                     sanitize.concat(`${index + 1}. ${name} ${address} ${city} ${state} ${zip}\n`), ''),
                 "INTERESTED PARTIES": (body["INTERESTED PARTIES"] || []).reduce((sanitize, { name, address, city, state, zip }, index) => 
                     sanitize.concat(`${index + 1}. ${name} ${address} ${city} ${state} ${zip}\n`), ''),
-            }
+            },
+            body["INTERESTED PARTIES"].reduce((sanitize, { name, address, city, state, zip }, index) => (assign(sanitize, {
+                [`Name_${index + 1}`]: name,
+                [`Street_${ index + 1 }`]: address,
+                [`CityStateZipCountry_${ index + 1}`]: `${city} ${state} ${zip}`,
+            })), {})
         );
         console.log(pdfData, 'this is pdf data')
         pdfFiller.fillForm(sourcePDF, destinationPDF, pdfData, err => {
@@ -65,23 +71,24 @@ module.exports = {
             res.send(fs.readFileSync(destinationPDF));
         });
 
+
     },
 
     /**
      * lienController.update()
      */
-    update: function (req, res) {
+    update (req, res) {
         console.log('insides update')
-        var id = req.params.id;
+        const id = req.params.id;
         return res.json({});
     },
 
     /**
      * lienController.remove()
      */
-    remove: function (req, res) {
+    remove (req, res) {
         console.log('insides remove')
-        var id = req.params.id;
+        const id = req.params.id;
         return res.json({});
     }
 };
