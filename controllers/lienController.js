@@ -41,7 +41,10 @@ module.exports = {
         const pdfData = assign(body,
             {
                 "STORAGE TO DATE": storageToDate,
-                'P1-6-Parking Violations 4000 or less': storageToDate,
+                "P1-6-Towing 4000 or less": body.TOWING,
+                'P1-6-Repairs 4000 or less': body.REPAIRS,
+                'P1-6-Parking Violations 4000 or less': body["PARKING VIOLATIONS"],
+                "P1-6-Cost of Selling 4000 or less": body["COST FOR LIEN SALE"],
                 "P1-6-Total of 2 (A-D) 4000 or less": +body.TOWING + +body.REPAIRS + +body["COST FOR LIEN SALE"] + storageToDate,
                 "P1-7-Area Code": body.tel.slice(0, 3),
                 "P1-7-Telephone No": body.tel.slice(3),
