@@ -1,4 +1,4 @@
-FROM node
+FROM node-pdftk
 
 # Create app directory
 RUN mkdir -p /usr/src/app
