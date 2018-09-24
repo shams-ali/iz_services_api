@@ -49,28 +49,30 @@ module.exports = {
                 "P1-6-Total of 2 (A-D) 4000 or less": +body.TOWING + +body.REPAIRS + +body["COST FOR LIEN SALE"] + storageToDate,
                 "P1-7-Area Code": body.tel.slice(0, 3),
                 "P1-7-Telephone No": body.tel.slice(3),
-                "P1-1-Lic Exp Date": moment(body["P1-1-Lic Exp Date"]).format("MM Do YYYY"), // not required leave empty
-                "P1-2-Date Veh into possession": moment(body["P1-2-Date Veh into possession"]).format("MM Do YYYY"),
-                "P1-2-Date owner billed": moment(body["P1-2-Date owner billed"]).format("MM Do YYYY"),
-                "P1-2-Date work-serv completed": moment(body["P1-2-Date work-serv completed"]).format("MM Do YYYY"),
-                "DATE NOTICE MAILED": moment(body["DATE NOTICE MAILED"]).format("MM Do YYYY"),
-                "DATE OF SALE": moment(body["DATE OF SALE"]).format("MM Do YYYY"),
+                "P1-1-Lic Exp Date": moment(body["P1-1-Lic Exp Date"]).format("MM DD YY"), // not required leave empty
+                "P1-2-Date Veh into possession": moment(body["P1-2-Date Veh into possession"]).format("MM DD YY"),
+                "P1-2-Date owner billed": moment(body["P1-2-Date owner billed"]).format("MM DD YY"),
+                "P1-2-Date work-serv completed": moment(body["P1-2-Date work-serv completed"]).format("MM DD YY"),
+                "DATE NOTICE MAILED": moment(body["DATE NOTICE MAILED"]).format("MM DD YY"),
+                "DATE OF SALE": moment(body["DATE OF SALE"]).format("MM DD YY"),
                 "REGISTERED OWNER": (body["REGISTERED OWNER"] || []).reduce((sanitize, { name, address, city, state, zip }, index) => 
                     sanitize.concat(`${index + 1}. ${name}\n ${address}\n ${city}, ${state} ${zip}\n`), ''),
                 "LEGAL OWNER": (body["LEGAL OWNER"] || []).reduce((sanitize, { name, address, city, state, zip }, index) => 
                     sanitize.concat(`${index + 1}. ${name} ${address} ${city} ${state} ${zip}\n`), ''),
-                "INTERESTED PARTIES": (body["INTERESTED PARTIES"] || []).reduce((sanitize, { name, address, city, state, zip }, index) => 
+                "INTERESTED PARTIES": (body["REGISTERED OWNER"] || []).reduce((sanitize, { name, address, city, state, zip }, index) => 
                     sanitize.concat(`${index + 1}. ${name} ${address} ${city} ${state} ${zip}\n`), ''),
             },
-            [...body["REGISTERED OWNER"], ...body["LEGAL OWNER"], ...body["INTERESTED PARTIES"]].reduce((sanitize, { name, address, city, state, zip }, index) => (assign(sanitize, {
+            [...body["REGISTERED OWNER"] || [], ...body["LEGAL OWNER"] || []].reduce((sanitize, { name, address, city, state, zip }, index) => (assign(sanitize, {
                 [`Name_${index + 1}`]: name,
                 [`Street_${ index + 1 }`]: address,
                 [`CityStateZipCountry_${ index + 1}`]: `${city} ${state} ${zip}`,
             })), {})
         );
-        // console.log(pdfData, 'this is pdf data')
         pdfFiller.fillForm(sourcePDF, destinationPDF, pdfData, err => {
-            if (err) throw err;
+            if (err) {
+                console.error(err, 'this is error in pdfiller')
+                throw err
+            };
             res.contentType("application/pdf");
             res.send(fs.readFileSync(destinationPDF));
         });
