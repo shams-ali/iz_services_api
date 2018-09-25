@@ -59,11 +59,11 @@ module.exports = {
                 "REGISTERED OWNER": (body["REGISTERED OWNER"] || []).reduce((sanitize, { name, address, city, state, zip }, index) => 
                     sanitize.concat(`${index + 1}. ${name}\n ${address}\n ${city}, ${state} ${zip}\n`), ''),
                 "LEGAL OWNER": (body["LEGAL OWNER"] || []).reduce((sanitize, { name, address, city, state, zip }, index) => 
-                    sanitize.concat(`${index + 1}. ${name} ${address} ${city} ${state} ${zip}\n`), ''),
-                "INTERESTED PARTIES": (body["REGISTERED OWNER"] || []).reduce((sanitize, { name, address, city, state, zip }, index) => 
-                    sanitize.concat(`${index + 1}. ${name} ${address} ${city} ${state} ${zip}\n`), ''),
+                    sanitize.concat(`${index + 1}. ${name}\n ${address}\n ${city}, ${state} ${zip}\n`), ''),
+                "INTERESTED PARTIES": (body["INTERESTED PARTIES"] || []).reduce((sanitize, { name, address, city, state, zip }, index) => 
+                    sanitize.concat(`${index + 1}. ${name}\n ${address}\n ${city}, ${state} ${zip}\n`), ''),
             },
-            [...body["REGISTERED OWNER"] || [], ...body["LEGAL OWNER"] || []].reduce((sanitize, { name, address, city, state, zip }, index) => (assign(sanitize, {
+            [...body["REGISTERED OWNER"] || [], ...body["LEGAL OWNER"] || [], body["INTERESTED PARTIES"] || []].reduce((sanitize, { name, address, city, state, zip }, index) => (assign(sanitize, {
                 [`Name_${index + 1}`]: name,
                 [`Street_${ index + 1 }`]: address,
                 [`CityStateZipCountry_${ index + 1}`]: `${city} ${state} ${zip}`,
