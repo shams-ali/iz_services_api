@@ -48,7 +48,7 @@ module.exports = {
                 "P1-6-Cost of Selling 4000 or less": body["COST FOR LIEN SALE"],
                 "P1-6-Total of 2 (A-D) 4000 or less": +body.TOWING + +body.REPAIRS + +body["COST FOR LIEN SALE"] + storageToDate,
                 "P1-7-Area Code": body.tel.slice(0, 3),
-                "P1-7-Telephone No": body.tel.slice(3),
+                "P1-7-Telephone No": body.tel.slice(3).split('-').join(''),
                 "P1-1-Year": body.year,
                 "P1-1-Lic Exp Date": moment(body["P1-1-Lic Exp Date"]).format("MM DD YY"), // not required leave empty
                 "P1-2-Date Veh into possession": moment(body["P1-2-Date Veh into possession"]).format("MM DD YY"),
