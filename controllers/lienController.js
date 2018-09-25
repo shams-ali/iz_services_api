@@ -55,7 +55,7 @@ module.exports = {
                     "P1-1-Lic Exp Date": moment(body["P1-1-Lic Exp Date"]).format("MM DD YY"), // not required leave empty
                     "P1-2-Date Veh into possession": moment(body["P1-2-Date Veh into possession"]).format("MM DD YY"),
                     "P1-2-Date owner billed": moment(body["P1-2-Date owner billed"]).format("MM DD YY"),
-                    "P1-2-Date work-serv completed": moment(body["P1-2-Date work-serv completed"]).format("MM DD YY"),
+                    "P1-2-Date work-serv completed": body["P1-2-Date work-serv completed"] ? moment(body["P1-2-Date work-serv completed"]).format("MM DD YY") : '',
                     "DATE NOTICE MAILED": moment(body["DATE NOTICE MAILED"]).format("MM DD YY"),
                     "DATE OF SALE": moment(body["DATE OF SALE"]).format("MM DD YY"),
                     "REGISTERED OWNER": (body["REGISTERED OWNER"] ? body["REGISTERED OWNER"] : []).reduce((sanitize, { name, address, city, state, zip }, index) => 
